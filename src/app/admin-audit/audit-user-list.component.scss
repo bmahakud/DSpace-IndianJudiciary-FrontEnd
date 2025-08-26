@@ -1,0 +1,25 @@
+.user-list-container {
+    padding: 24px;
+  
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      cursor: pointer;
+  
+      th, td {
+        padding: 12px;
+        border: 1px solid #ccc;
+        text-align: left;
+      }
+  
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+  
+      a {
+        text-decoration: underline;
+        color: #007bff;
+      }
+    }
+  }
+  
