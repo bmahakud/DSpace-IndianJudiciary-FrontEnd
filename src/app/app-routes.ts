@@ -50,6 +50,8 @@ import { FuzzySearchComponent } from "./fuzzy_search/free-text.component"
 import { BooleanSearchComponent } from "./boolean-search/boolean-search.component"
 import { ProximitySearchComponent } from "./proximity-search/proximity-search.component"
 import { CnrManagerComponent } from "./cnr-manager/cnr-manager.component"
+import { AdminPannelComponent } from "./admin-pannel/admin-pannel.component"
+
 // import { SearchByCaseComponent } from './searchN/search-by-case.component';
 
 export const APP_ROUTES: Route[] = [
@@ -157,6 +159,12 @@ export const APP_ROUTES: Route[] = [
         data: { enableRSS: true },
         providers: [provideSuggestionNotificationsState()],
         canActivate: [authenticatedGuard, endUserAgreementCurrentUserGuard],
+      },
+
+      {
+        path: 'admin-watermark',
+        component: (AdminPannelComponent as any), // import the component at the top
+        canActivate: [authenticatedGuard, endUserAgreementCurrentUserGuard]
       },
       {
         path: "search",
