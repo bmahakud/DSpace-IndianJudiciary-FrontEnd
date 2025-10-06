@@ -1,14 +1,14 @@
 import {
   Component,
-    OnInit,
-    ElementRef,
+  OnInit,
+  ElementRef,
   ViewChild,
-    AfterViewInit,
-    ChangeDetectorRef,
-    OnDestroy,
+  AfterViewInit,
+  ChangeDetectorRef,
+  OnDestroy,
 } from "@angular/core"
-import   { ActivatedRoute } from "@angular/router"
-import   { SignpostingDataService } from "src/app/core/data/signposting-data.service"
+import { ActivatedRoute } from "@angular/router"
+import { SignpostingDataService } from "src/app/core/data/signposting-data.service"
 import { CommonModule } from "@angular/common"
 import * as pdfjsLib from "pdfjs-dist"
 import "pdfjs-dist/build/pdf.worker.entry"
@@ -21,7 +21,7 @@ import {
   BitstreamPermissionsService,
   TimeAccessStatus,
 } from "src/app/core/serachpage/bitstream-permissions.service"
-import { interval,  Subscription } from "rxjs"
+import { interval, Subscription } from "rxjs"
 import { FormsModule } from "@angular/forms"
 import { BitstreamComment, BitstreamCommentService } from "src/app/core/serachpage/bitstream-comment.service"
 
@@ -147,7 +147,7 @@ export class ViewerComponent implements OnInit, AfterViewInit, OnDestroy {
     private pdfService: PdfService,
     private bitstreamPermissionsService: BitstreamPermissionsService,
     private bitstreamCommentService: BitstreamCommentService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
@@ -481,19 +481,19 @@ export class ViewerComponent implements OnInit, AfterViewInit, OnDestroy {
           textLayerDiv.style.pointerEvents = "none"
 
           pageContainer.appendChild(textLayerDiv)
-          ;(pdfjsLib as any)
-            .renderTextLayer({
-              textContent,
-              container: textLayerDiv,
-              viewport,
-              textDivs: [],
-            })
-            .promise.then(() => {
-              const termToHighlight = this.searchText?.trim() || this.searchTerm?.trim()
-              if (termToHighlight) {
-                this.highlightMatches(textLayerDiv, termToHighlight)
-              }
-            })
+            ; (pdfjsLib as any)
+              .renderTextLayer({
+                textContent,
+                container: textLayerDiv,
+                viewport,
+                textDivs: [],
+              })
+              .promise.then(() => {
+                const termToHighlight = this.searchText?.trim() || this.searchTerm?.trim()
+                if (termToHighlight) {
+                  this.highlightMatches(textLayerDiv, termToHighlight)
+                }
+              })
         })
       })
     }
@@ -619,7 +619,7 @@ export class ViewerComponent implements OnInit, AfterViewInit, OnDestroy {
   toggleFullScreen(): void {
     const elem = document.querySelector(".file-container")
     if (elem && !document.fullscreenElement) {
-      ;(elem as HTMLElement).requestFullscreen()
+      ; (elem as HTMLElement).requestFullscreen()
     } else {
       document.exitFullscreen()
     }
@@ -651,114 +651,45 @@ export class ViewerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   downloadFile(): void {
     if (!this.canDownloadFile) {
-      console.warn("Download permission denied")
-      return
+      console.warn("Download permission denied");
+      return;
     }
 
-    // Default filename
-    let fileName = "download.pdf"
+    const filename = this.generateCustomFilename() || "encrypted.pdf";
 
-    // Log the metadata to see what we're working with
-    console.log("Current metadata array:", this.metadata)
+    this.pdfService.encryptBitstream(this.currentBitstreamId).subscribe({
+      next: (blob) => {
+        const blobUrl = this.pdfService.createBlobUrl(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        this.pdfService.revokeBlobUrl(blobUrl);
 
-    try {
-      // Find metadata entries for case type, number, and year
-      const caseTypeEntry = this.metadata.find((item) => item.name === "Case Type")
-      const caseNumberEntry = this.metadata.find((item) => item.name === "Case Number")
-      const caseYearEntry = this.metadata.find((item) => item.name === "Case Year")
-
-      console.log("Found metadata entries:", {
-        caseTypeEntry,
-        caseNumberEntry,
-        caseYearEntry,
-      })
-
-      // Extract values if entries exist
-      const caseType = caseTypeEntry?.value?.trim() || ""
-      const caseNumber = caseNumberEntry?.value?.trim() || ""
-      const caseYear = caseYearEntry?.value?.trim() || ""
-
-      console.log("Extracted values:", {
-        caseType,
-        caseNumber,
-        caseYear,
-      })
-
-      // Only create custom filename if we have at least one piece of metadata
-      if (caseType || caseNumber || caseYear) {
-        // Create sanitized values for filename (remove special characters)
-        const sanitizeCaseType = caseType.replace(/[^a-zA-Z0-9]/g, "")
-        const sanitizeCaseNumber = caseNumber.replace(/[^a-zA-Z0-9]/g, "")
-        const sanitizeCaseYear = caseYear.replace(/[^a-zA-Z0-9]/g, "")
-
-        // Build filename parts array with available metadata
-        const filenameParts = []
-        if (sanitizeCaseType) filenameParts.push(sanitizeCaseType)
-        if (sanitizeCaseNumber) filenameParts.push(sanitizeCaseNumber)
-        if (sanitizeCaseYear) filenameParts.push(sanitizeCaseYear)
-
-        // Join parts with underscore and add .pdf extension
-        if (filenameParts.length > 0) {
-          fileName = filenameParts.join("_") + ".pdf"
-          console.log("Generated custom filename:", fileName)
-        }
-      } else {
-        // If we couldn't find the standard metadata, try a more flexible approach
-        console.log("Trying flexible metadata search...")
-
-        // Look for any metadata that might contain case information
-        const caseTypeAlt = this.findMetadataByPartialName("type")
-        const caseNumberAlt = this.findMetadataByPartialName("number")
-        const caseYearAlt = this.findMetadataByPartialName("year")
-
-        console.log("Flexible search results:", {
-          caseTypeAlt,
-          caseNumberAlt,
-          caseYearAlt,
-        })
-
-        if (caseTypeAlt || caseNumberAlt || caseYearAlt) {
-          const sanitizeTypeAlt = (caseTypeAlt || "").replace(/[^a-zA-Z0-9]/g, "")
-          const sanitizeNumberAlt = (caseNumberAlt || "").replace(/[^a-zA-Z0-9]/g, "")
-          const sanitizeYearAlt = (caseYearAlt || "").replace(/[^a-zA-Z0-9]/g, "")
-
-          const altParts = []
-          if (sanitizeTypeAlt) altParts.push(sanitizeTypeAlt)
-          if (sanitizeNumberAlt) altParts.push(sanitizeNumberAlt)
-          if (sanitizeYearAlt) altParts.push(sanitizeYearAlt)
-
-          if (altParts.length > 0) {
-            fileName = altParts.join("_") + ".pdf"
-            console.log("Generated alternative filename:", fileName)
-          }
-        }
+        console.log("🔐 Encrypted file downloaded:", filename);
+      },
+      error: (err) => {
+        console.error("❌ Error downloading encrypted file:", err);
       }
-    } catch (error) {
-      console.error("Error generating filename:", error)
-    }
-
-    console.log("Final download filename:", fileName)
-
-    // Proceed with download using the generated filename
-    fetch(this.fileUrl)
-      .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok")
-        return res.blob()
-      })
-      .then((blob) => {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = fileName
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        URL.revokeObjectURL(url)
-      })
-      .catch((err) => {
-        console.error("Download error:", err)
-      })
+    });
   }
+
+  private generateCustomFilename(): string {
+    const caseType = this.findMetadataByPartialName("type")
+    const caseNumber = this.findMetadataByPartialName("number")
+    const caseYear = this.findMetadataByPartialName("year")
+
+    const parts = [caseType, caseNumber, caseYear]
+      .map((p) => p?.replace(/[^a-zA-Z0-9]/g, ""))
+      .filter(Boolean)
+
+    return parts.length > 0 ? parts.join("_") + ".pdf" : "encrypted.pdf"
+  }
+
+
+
 
   // Helper method to find metadata by partial name match (case insensitive)
   findMetadataByPartialName(partialName: string): string {
@@ -825,7 +756,7 @@ export class ViewerComponent implements OnInit, AfterViewInit, OnDestroy {
   toggleImageFullScreen(): void {
     const elem = document.querySelector(".image-container")
     if (elem && !document.fullscreenElement) {
-      ;(elem as HTMLElement).requestFullscreen()
+      ; (elem as HTMLElement).requestFullscreen()
     } else {
       document.exitFullscreen()
     }
@@ -944,7 +875,7 @@ export class ViewerComponent implements OnInit, AfterViewInit, OnDestroy {
         if (currentTextLayer) {
           const matches = currentTextLayer.querySelectorAll(".highlight-search")
           if (matches.length > 0) {
-            ;(matches[0] as HTMLElement).classList.add("active")
+            ; (matches[0] as HTMLElement).classList.add("active")
           }
         }
       }
@@ -1090,10 +1021,10 @@ export class ViewerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   confirmDeleteComment(): void {
     if (this.commentToDelete === null) return
-    
+
     this.deletingCommentId = this.commentToDelete
     this.showDeleteConfirmation = false
-    
+
     this.bitstreamCommentService.deleteComment(this.commentToDelete).subscribe({
       next: () => {
         this.comments = this.comments.filter((c) => c.id !== this.commentToDelete)

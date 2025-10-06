@@ -39,6 +39,19 @@ export class PdfService {
     return URL.createObjectURL(blob);
   }
 
+
+    encryptBitstream(bitstreamId: string): Observable<Blob> {
+    const url = `${CURRENT_API_URL}/server/api/diracai/encrypt-bitstream`;
+    return this.http.post(url, { bitstreamId }, {
+      responseType: 'blob',
+      withCredentials: true
+    }).pipe(
+      catchError(error => {
+        console.error('Encryption API error:', error);
+        return throwError(() => new Error('Failed to encrypt file.'));
+      })
+    );
+  }
   /**
    * Revokes a blob URL to free up memory
    * @param url The blob URL to revoke

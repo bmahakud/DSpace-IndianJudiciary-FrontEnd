@@ -33,11 +33,6 @@ import { EPerson } from '../../../core/eperson/models/eperson.model';
 import { MYDSPACE_ROUTE } from '../../../my-dspace-page/my-dspace-page.component';
 import { ThemedLoadingComponent } from '../../loading/themed-loading.component';
 import { LogOutComponent } from '../../log-out/log-out.component';
-import { AuthorizationDataService } from '../../../core/data/feature-authorization/authorization-data.service';
-import { SiteDataService } from '../../../core/data/site-data.service';
-import { switchMap } from 'rxjs/operators';
-import { Site } from '../../../core/shared/site.model';
-import { FeatureID } from '../../../core/data/feature-authorization/feature-id';
 
 /**
  * This component represents the user nav menu.
@@ -48,7 +43,6 @@ import { FeatureID } from '../../../core/data/feature-authorization/feature-id';
   styleUrls: ['./user-menu.component.scss'],
   standalone: true,
   imports: [NgIf, ThemedLoadingComponent, RouterLinkActive, NgClass, RouterLink, LogOutComponent, AsyncPipe, TranslateModule],
-  
 })
 export class UserMenuComponent implements OnInit {
 
@@ -85,10 +79,6 @@ export class UserMenuComponent implements OnInit {
    */
   public profileRoute = getProfileModuleRoute();
 
-
-  public isAdmin$: Observable<boolean>;
-
-
   /**
    * The profile page route
    */
@@ -98,10 +88,6 @@ export class UserMenuComponent implements OnInit {
     protected store: Store<AppState>,
     protected authService: AuthService,
     public dsoNameService: DSONameService,
-    private authorizationService: AuthorizationDataService,
-    private siteDataService: SiteDataService
-
-
   ) {
   }
 
@@ -115,34 +101,6 @@ export class UserMenuComponent implements OnInit {
 
     // set user
     this.user$ = this.authService.getAuthenticatedUserFromStore();
-
-    
-
-    // this.isAdmin$ = this.siteDataService.find().pipe(
-    //   switchMap((site: Site) =>
-    //     this.authorizationService.isAuthorized(
-    //       FeatureID.AdministratorOf,
-    //       site._links.self.href
-    //     )
-    //   )
-    // );
-    
-    this.isAdmin$ = this.siteDataService.find().pipe(
-      switchMap((site: Site) =>
-        this.authorizationService.isAuthorized(
-          FeatureID.AdministratorOf,
-          site._links.self.href
-        )
-      )
-    );
-    
-    
-        
-    
-    
-    
-    
-    
 
   }
 

@@ -17,16 +17,24 @@
   <li class="ds-menu-item-wrapper" role="presentation" (click)="onMenuItemClick()">
     <a class="ds-menu-item" role="menuitem" [routerLink]="['/adminpool']" routerLinkActive="active">Admin pool</a>
   </li>
-  <li *ngIf="isAdmin$ | async" class="ds-menu-item-wrapper" role="presentation" (click)="onMenuItemClick()">
-    <a class="ds-menu-item" role="menuitem" [routerLink]="['/jtdr']" routerLinkActive="active">
-      Jtdr
-    </a>
+  <li class="ds-menu-item-wrapper" role="presentation" (click)="onMenuItemClick()">
+    <a class="ds-menu-item" role="menuitem" [routerLink]="['/jtdr']" routerLinkActive="active">Jtdr</a>
+  </li>
+
+  <li class="ds-menu-item-wrapper" role="presentation" (click)="onMenuItemClick()">
+    <a class="ds-menu-item" role="menuitem" [routerLink]="['/user-audit']" routerLinkActive="active">User audit</a>
+  </li>
+  <li class="ds-menu-item-wrapper" role="presentation" (click)="onMenuItemClick()">
+    <a class="ds-menu-item" role="menuitem" [routerLink]="['/admin-watermark']" routerLinkActive="active">Admin
+      pannel</a>
   </li>
 
   <li class="ds-menu-item-wrapper" role="presentation" (click)="onMenuItemClick()">
     <a class="ds-menu-item" role="menuitem" [routerLink]="[subscriptionsRoute]"
       routerLinkActive="active">{{'nav.subscriptions' | translate}}</a>
   </li>
+
+
   <ng-container *ngIf="!inExpandableNavbar">
     <li class="dropdown-divider" aria-hidden="true"></li>
     <li class="ds-menu-item-wrapper" role="presentation">

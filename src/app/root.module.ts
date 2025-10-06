@@ -44,6 +44,8 @@ import { ProximitySearchModule } from './proximity-search/proximity-search.modul
 import { BooleanSearchModule } from './boolean-search/boolean-search.module';
 import { CatalogingMetadataSearchModule } from './cataloging-metadata-search/cataloging-metadata-search.module';
 import { CnrManagerModule } from './cnr-manager/cnr-manager.module';
+//import { WatermarkApiService } from './admin-pannel/admin-pannel.service';
+import { AdminPannelModule } from './admin-pannel/admin-pannel.module';
 // import { PetitionerRespondentSearchRoutingModule } from './petitioner-respondent-search/petitioner-respondent-search-routing.module';
 
 const IMPORTS = [
@@ -104,7 +106,8 @@ const EXPORTS = [
     ProximitySearchModule,
     BooleanSearchModule,
     CatalogingMetadataSearchModule,
-    CnrManagerModule
+    CnrManagerModule,
+    AdminPannelModule
   ],
   providers: [
     ...PROVIDERS,
@@ -117,3 +120,5 @@ const EXPORTS = [
 export class RootModule {
 
 }
+
+
